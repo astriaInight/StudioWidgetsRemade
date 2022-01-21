@@ -2,6 +2,47 @@ local studioui = {}
 
 local types = require(script.Types)
 
+--// Colors
+local function getCol(c : Enum.StudioStyleGuideColor)
+	return settings().Studio.Theme:GetColor(c)
+end
+
+function updateColors(gui)
+	local bkFrame = gui.BackgroundFrame
+	local scroll = bkFrame.Scroll
+	local section = scroll.Section
+	local secContent = scroll.SectionContent
+	local frame = secContent.Frame
+	local checkbox = secContent.Checkbox
+	local textbox = secContent.Textbox
+
+	section.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.Titlebar)
+	section.Title.TextColor3 = getCol(Enum.StudioStyleGuideColor.MainText)
+
+	bkFrame.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.MainBackground)
+	secContent.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.MainBackground)
+
+	frame.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.MainBackground)
+	frame.BorderColor3 = getCol(Enum.StudioStyleGuideColor.InputFieldBorder)
+
+	checkbox.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.MainBackground)
+	checkbox.Left.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.MainBackground)
+	checkbox.Left.BorderColor3 = getCol(Enum.StudioStyleGuideColor.InputFieldBorder)
+	checkbox.Right.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.MainBackground)
+	checkbox.Right.BorderColor3 = getCol(Enum.StudioStyleGuideColor.InputFieldBorder)
+	checkbox.Left.Title.TextColor3 = getCol(Enum.StudioStyleGuideColor.MainText)
+	checkbox.Right.Checkbox.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.CheckedFieldBackground)
+	checkbox.Right.Checkbox.BorderColor3 = getCol(Enum.StudioStyleGuideColor.CheckedFieldBorder)
+
+	textbox.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.MainBackground)
+	textbox.Left.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.MainBackground)
+	textbox.Left.BorderColor3 = getCol(Enum.StudioStyleGuideColor.InputFieldBorder)
+	textbox.Right.BackgroundColor3 = getCol(Enum.StudioStyleGuideColor.MainBackground)
+	textbox.Right.BorderColor3 = getCol(Enum.StudioStyleGuideColor.InputFieldBorder)
+	textbox.Left.Title.TextColor3 = getCol(Enum.StudioStyleGuideColor.MainText)
+end
+
+--// Plugin stuff
 function studioui:SetPlugin(plugin : Plugin)
 	self.plugin = plugin
 end
@@ -31,6 +72,12 @@ function studioui:Window(title : string?, options : types.windowOptions?)
 	for _, elem in pairs(script.WinGui:GetChildren()) do
 		elem:Clone().Parent = pluginGui
 	end
+	
+	--// Theme handling
+	updateColors(pluginGui)
+	settings().Studio.ThemeChanged:Connect(function()
+		updateColors(pluginGui)
+	end)
 	
 	--// Setup elements & store them
 	local bkFrame = pluginGui.BackgroundFrame
